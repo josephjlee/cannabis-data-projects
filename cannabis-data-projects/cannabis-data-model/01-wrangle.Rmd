@@ -1,0 +1,71 @@
+---
+title: "README - Wrangling cannabis data"
+author: "Martin Frigaard"
+date: "current version: `r Sys.Date()`"
+output: github_document
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+require(tidyverse)
+library(plotly)
+require(janitor)
+require(skimr)
+library(mosaic)
+library(inspectdf)
+library(visdat)
+library(DT)
+# base options ----
+base::options(
+  tibble.print_max = 25,
+  tibble.width = 78,
+  scipen = 100000000,
+  max.print = 999999
+)
+# knitr chunk options ----
+knitr::opts_chunk$set(
+  echo = TRUE, # show/hide all code
+  # results = "hide", # hide results
+  tidy = FALSE, # cleaner code printing
+  comment = "#> ", # better console printing
+  eval = TRUE, # turn this to FALSE stop code chunks from running
+  message = TRUE, # show messages
+  fig.width = 7, # figure width
+  fig.height = 5, # figure height
+  warning = FALSE, # show warnings
+  size = "small", # size of the text
+  fig.path = "figs/"
+) # location of files
+# knitr knit settings ----
+knitr::opts_knit$set(
+  width = 78
+)
+```
+
+# Motivation
+
+This script outlines the steps to wrangle the Cannabis and Online Retail data.
+
+## The Online Retail data 
+
+This data came from a UK e-commerce dataset from the [UCI Machine Learning Laboratory](https://archive.ics.uci.edu/ml/datasets/online+retail). 
+
+```{r import-OnlineRetail}
+# fs::dir_tree("data")
+OnlineRetail <- readr::read_csv("data/raw/Online_Retail.csv")
+```
+
+```{r str-OnlineRetail}
+dplyr::glimpse(OnlineRetail)
+```
+
+There are 8 variables in this data frame. 
+
+```{r skim-OnlineRetail}
+skimr::skim(OnlineRetail)
+```
+
+Most of these data are categorical, but we're going to format the date variables. 
+

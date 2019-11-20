@@ -1,0 +1,64 @@
+---
+title: "Cannabis data projects"
+author: "Martin Frigaard"
+date: "`r Sys.Date()`"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+# create figs folder ----
+if (!file.exists("figs/")) {
+    dir.create("figs/")
+}
+# create data folder ----
+if (!file.exists("data/")) {
+    dir.create("data/")
+}
+# create docs folder ----
+if (!file.exists("docs/")) {
+    dir.create("docs/")
+}
+library(knitr)
+library(rmdformats)
+library(tidyverse)
+library(devtools)
+library(hrbrthemes)
+# chunks set options
+knitr::opts_chunk$set(
+  echo = TRUE, # show/hide all code
+  tidy = FALSE, # cleaner code printing
+  comment = "#> ", # better console printing
+  eval = TRUE, # turn this to FALSE stop code chunks from running
+  message = TRUE, # show messages
+  warning = TRUE, # show warnings
+  size = "small", # size of the text
+  fig.path = "figs/", # location of files
+  fig.height = 5.5, # height of figures
+  fig.width = 8 # width of figures
+) # width of figures
+# knit set options
+knitr::opts_knit$set(
+  width = 78,
+  progress = FALSE
+)
+# base options
+base::options(
+  tibble.print_max = 25,
+  tibble.width = 78,
+   max.print = 999999,
+  scipen = 100000000
+)
+```
+
+# Data projects with cannabis data
+
+```{r dir_tree}
+fs::dir_tree("cannabis-data-model")
+```
+
+
+```{r dir_tree-shinydashboard-cannabis}
+fs::dir_tree("shinydashboard-cannabis")
+```
+
+
