@@ -1,7 +1,7 @@
 Cannabis data projects
 ================
 Martin Frigaard
-2019-11-20
+2019-11-21
 
 # Data projects with cannabis data
 
@@ -18,6 +18,7 @@ fs::dir_tree("cannabis-data-model")
     #>  cannabis-data-model
     #>  ├── 00-setup.R
     #>  ├── 01-wrangle.Rmd
+    #>  ├── 01-wrangle.md
     #>  ├── CITATION
     #>  ├── INSTALL.R
     #>  ├── LICENSE
@@ -35,18 +36,18 @@ fs::dir_tree("cannabis-data-model")
     #>  ├── data
     #>  │   ├── kushy-datasets
     #>  │   │   ├── Brands
-    #>  │   │   │   ├── brands-kushy_api.2017-11-14.csv
     #>  │   │   │   └── brands-kushy_api.2017-11-14.sql
     #>  │   │   ├── Products
-    #>  │   │   │   ├── products-kushy_api.2017-11-14.csv
     #>  │   │   │   └── products-kushy_api.2017-11-14.sql
     #>  │   │   ├── README.md
     #>  │   │   ├── Shops
-    #>  │   │   │   ├── shops-kushy_api.2017-11-14.csv
     #>  │   │   │   └── shops-kushy_api.2017-11-14.sql
-    #>  │   │   └── Strains
-    #>  │   │       ├── strains-kushy_api.2017-11-14.csv
-    #>  │   │       └── strains-kushy_api.2017-11-14.sql
+    #>  │   │   ├── Strains
+    #>  │   │   │   └── strains-kushy_api.2017-11-14.sql
+    #>  │   │   ├── brands-kushy_api.2017-11-14.csv
+    #>  │   │   ├── products-kushy_api.2017-11-14.csv
+    #>  │   │   ├── shops-kushy_api.2017-11-14.csv
+    #>  │   │   └── strains-kushy_api.2017-11-14.csv
     #>  │   ├── marijuana-data-processing
     #>  │   │   ├── NSDUH-totals-2016
     #>  │   │   │   ├── CSV-File-Description.txt
@@ -109,7 +110,15 @@ fs::dir_tree("cannabis-data-model")
     #>  │   ├── lab-notes.md
     #>  │   └── project-manuscript.md
     #>  ├── figs
-    #>  │   └── headset-example.png
+    #>  │   ├── cat-KushyBrands-1.png
+    #>  │   ├── cat-KushyProducts-1.png
+    #>  │   ├── cat-KushyShops-1.png
+    #>  │   ├── cat-KushyStrains-1.png
+    #>  │   ├── headset-example.png
+    #>  │   ├── kushy_brands_inspect_na-1.png
+    #>  │   ├── kushy_products_inspect_na-1.png
+    #>  │   ├── kushy_shops_inspect_na-1.png
+    #>  │   └── kushy_strains_inspect_na-1.png
     #>  ├── requirements.txt
     #>  ├── results
     #>  │   └── README.md
