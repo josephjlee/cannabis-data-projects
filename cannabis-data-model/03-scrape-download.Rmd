@@ -47,7 +47,15 @@ knitr::opts_knit$set(
 
 ## Cannabis web data
 
-Resources: [Web Scraping Product Data in R with rvest and purrr](https://www.business-science.io/code-tools/2019/10/07/rvest-web-scraping.html)
+Resources: 
+
+- [Web Scraping Product Data in R with rvest and purrr](https://www.business-science.io/code-tools/2019/10/07/rvest-web-scraping.html) 
+
+- https://www.datacamp.com/community/tutorials/r-web-scraping-rvest
+
+- https://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/
+
+- https://tutorials.datasciencedojo.com/r-tutorial-web-scraping-rvest/
 
 This document covers how to scrape the `dutchie` website using R. 
 
