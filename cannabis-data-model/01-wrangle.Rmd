@@ -65,16 +65,35 @@ This data came from a UK e-commerce dataset from the [UCI Machine Learning Labor
 
 ```{r import-OnlineRetail}
 # fs::dir_tree("data")
-OnlineRetail <- readr::read_csv("data/raw/Online_Retail.csv",
-                                col_types = cols(
-                                InvoiceNo = col_character(),
-                                StockCode = col_character(),
-                                Description = col_character(),
-                                Quantity = col_integer(),
-                                InvoiceDate = col_datetime("%m/%d/%Y %H:%M"),
-                                UnitPrice = col_double(),
-                                CustomerID = col_integer(),
-                                Country = col_character()))
+OnlineRetail <- read_csv("data/raw/Online_Retail.csv")
+```
+
+```{r}
+OnlineRetail %>% 
+    dplyr::mutate(InvoiceDate = as.Date(InvoiceDate, "%m/%d/%Y"),
+                  
+                  dow = lubridate::day(InvoiceDate),
+                  
+                  week = lubridate::week(InvoiceDate),
+                  
+                  yr = lubridate::year(InvoiceDate),
+                  
+                  week_year = lubridate::floor_date(InvoiceDate, unit = "week"),
+                  
+                  
+                     
+                  )
+```
+
+
+```{r}
+OnlineRetail$InvoiceDate <- as.Date(OnlineRetail$InvoiceDate, "%m/%d/%Y")
+OnlineRetail$dow <- lubridate::day(OnlineRetail$InvoiceDate)
+OnlineRetail$week <- lubridate::week(OnlineRetail$InvoiceDate)
+OnlineRetail$yr <- lubridate::year(OnlineRetail$InvoiceDate)
+OnlineRetail$week_year <- lubridate::floor_date(OnlineRetail$InvoiceDate, unit = "week")
+OnlineRetail$month <- lubridate::month(OnlineRetail$week_year, abbr = TRUE, label = TRUE)
+OnlineRetail$floor_month <- lubridate::floor_date(OnlineRetail$week_year, unit = "month")
 ```
 
 ```{r str-OnlineRetail}
@@ -90,7 +109,7 @@ skimr::skim(OnlineRetail)
 
 ## Import kushy data 
 
-```{r kushy_files}
+```{r kushy_files, message=FALSE, warning=FALSE}
 kushy_files <- fs::dir_ls("data/kushy-datasets", regexp = "kushy_")
 # kushy_files[4]
 KushyBrands <- readr::read_csv(kushy_files[1])
@@ -98,6 +117,234 @@ KushyProducts <- readr::read_csv(kushy_files[2])
 KushyShops <- readr::read_csv(kushy_files[3])
 KushyStrains <- readr::read_csv(kushy_files[4])
 ```
+
+### Brands
+
+These are the Kushy brands 
+
+```{r KushyBrands}
+KushyBrands %>% dplyr::glimpse(78)
+```
+
+#### Brands: `name`
+
+The `name` has 1776 unique observations (nearly one per row).
+
+```{r name}
+KushyBrands %>% 
+    dplyr::distinct(name) %>% 
+    base::nrow()
+```
+
+#### Brands: `slug`
+
+```{r name}
+KushyBrands %>% 
+    dplyr::distinct(slug) %>% 
+    base::nrow()
+```
+
+#### Brands: `location`
+
+These are messy--many duplicates that need some cleaning.
+
+```{r name}
+KushyBrands %>% 
+    dplyr::count(location, sort = TRUE)
+```
+
+#### Brands: `category`
+
+These are non-tidy, so I will separate these into a tidy data frame. 
+
+```{r name}
+KushyBrands %>% 
+    dplyr::count(category, sort = TRUE)
+```
+
+This can be useful for categorizing later? Not sure but I imagine these are all useful.
+
+```{r KushyBrandsWide}
+KushyBrandsWide <- KushyBrands %>% 
+    dplyr::mutate(cat_no_comma = stringr::str_remove_all(string = category,
+                                                     pattern = ",")) %>% 
+    tidyr::separate(col = cat_no_comma, into = c("category01", 
+                                                "category02",
+                                                "category03",
+                                                "category04",
+                                                "category05",
+                                                "category06",
+                                                "category07"),
+                    
+                    remove = FALSE)
+# KushyBrandsWide %>% count(category07)
+KushyBrandsTidy <- KushyBrandsWide %>% 
+    tidyr::pivot_longer(cols = category01:category07, 
+                        names_to = "category_key",
+                        values_to = "category_name", 
+                        values_drop_na = TRUE) %>% 
+    dplyr::select(-c(category))
+KushyBrandsTidy %>% 
+    dplyr::count(category_name, sort = TRUE)
+```
+
+This tells me there are 20 different 
+
+```{r}
+library(readr)
+library(tidyverse)
+library(lubridate)
+library(ggthemes)
+library(cluster)
+library(factoextra)
+library(textshape)
+
+
+ecom <- read_csv("data/Online_Retail.csv")
+ecom$InvoiceDate_date <- as.Date(ecom$InvoiceDate, "%m/%d/%Y")
+ecom$dow <- day(ecom$InvoiceDate_date)
+ecom$week <- week(ecom$InvoiceDate_date)
+ecom$yr <- year(ecom$InvoiceDate_date)
+ecom$week_year <- floor_date(ecom$InvoiceDate_date, unit = "week")
+ecom$month <- month(ecom$week_year, abbr=TRUE, label=TRUE)
+ecom$floor_month <- floor_date(ecom$week_year, unit="month")
+
+
+wow <- ecom %>% 
+    select(week_year, Quantity) %>%
+    group_by(week_year) %>%
+    summarize(Week_Qty = sum(Quantity)) %>%
+    mutate(Prev_Week = lag(Week_Qty,1)) %>%
+    mutate(WoW_Quantity = (Week_Qty - Prev_Week) / Prev_Week) %>%
+    mutate(month = month(week_year, abbr=TRUE, label=TRUE)) %>%
+    group_by(week_year)
+
+
+
+ggWoW <- ggplot(data = wow, 
+                        mapping = aes(x=week_year, 
+                                      y = WoW_Quantity)) +
+                                      #color = purchaser_gender)) +
+    geom_line() +
+    geom_point() +
+    theme_fivethirtyeight() +
+    theme(axis.title = element_text()) +   
+    theme(legend.title = element_blank()) +
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+    facet_wrap(~ month, scales = "free") + 
+    ylab('Sales') +
+    xlab('Week') +    
+    ggtitle('Week Over Week Sales') 
+
+ggWoW 
+       
+
+ggQty <- wow %>%
+    na.omit() %>%
+    ggplot(data=., aes(x = week_year, y = Week_Qty)) + 
+    geom_line() +
+    geom_smooth() +
+    geom_point() +
+    #stat_summary(fun.y=mean, geom="bar") + 
+    #stat_summary(fun.data=mean_cl_boot, geom="errorbar", width=0.3) +
+    theme_fivethirtyeight() +
+    theme(axis.title = element_text()) + 
+    theme(legend.position = 'none') +
+    labs(title = "Quantity Per Week",
+         x = "Week", y = "Quantity Sold")
+
+
+ggQty  
+
+
+monthly <- ecom %>% 
+    select(floor_month, Country, Quantity, UnitPrice) %>%
+    mutate(Sales = Quantity*UnitPrice) %>%
+    group_by(floor_month,Country) %>%
+    summarize(MonthlySales = sum(Sales),
+              MedianSale = median(Sales)) %>%
+    group_by(floor_month, Country)
+
+ggmonthly <- monthly %>%
+    ggplot(data =., 
+                mapping = aes(x=floor_month, 
+                              y = MonthlySales)) +
+    geom_line() +
+    geom_point() +
+    theme_fivethirtyeight() +
+    theme(axis.title = element_text()) +   
+    theme(legend.title = element_blank()) +
+    scale_y_continuous(labels = scales::dollar_format(accuracy = 1)) +
+    facet_wrap(~ Country, scales = "free") + 
+    ylab('Sales') +
+    xlab('Month') +    
+    ggtitle('Monthly Sales') 
+
+ggmonthly 
+
+
+ggAOV <- monthly %>%
+    ggplot(data =., 
+           mapping = aes(x=floor_month, 
+                         y = MedianSale)) +
+    geom_line() +
+    geom_point() +
+    theme_fivethirtyeight() +
+    theme(axis.title = element_text()) +   
+    theme(legend.title = element_blank()) +
+    scale_y_continuous(labels = scales::dollar_format(accuracy = 1)) +
+    facet_wrap(~ Country, scales = "free") + 
+    ylab('Sales') +
+    xlab('Month') +    
+    ggtitle('Median Order Value') 
+
+ggAOV 
+
+customers_sales <- ecom %>%
+    select(CustomerID, Quantity, UnitPrice) %>%
+    group_by(CustomerID) %>%
+    mutate(Sales = (Quantity*UnitPrice)) %>%
+    summarize(Sales = sum(Sales),
+              MedianSale = median(Sales),
+              Quantity = sum(Quantity),
+              Median_Quantiy = median(Quantity)) %>%
+    group_by(CustomerID)
+
+customers_country <- ecom %>%
+    distinct(CustomerID, Country) %>%
+    group_by(CustomerID)
+
+customers_sales_country <- customers_sales %>%
+    inner_join(customers_country, by = "CustomerID")
+
+
+customer_sales_clust <- data.frame(customers_sales)
+customer_sales_clust <- customer_sales_clust %>%   
+                        drop_na() %>%
+                        filter(Sales > 0)
+summary(customer_sales_clust)
+customer_sales_clust <- column_to_rownames(customer_sales_clust) #, var = "CustomerID")
+
+customer_sales_clust <- scale(customer_sales_clust)
+k2 <- kmeans(customer_sales_clust, centers =2 , nstart = 25)
+k2
+
+fviz_cluster(k2, data = customer_sales_clust)
+
+customer_sales_clust <- data.frame(customer_sales_clust, k2$cluster)
+```
+
+
+
+### Products 
+
+
+
+### Shops
+
+### Strains
+
+
 
 ### Categorical data 
 

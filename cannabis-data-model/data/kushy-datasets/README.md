@@ -4,18 +4,21 @@ The Kushy cannabis dataset is a collection of tabular data from different sector
 
 ## Uses for Dataset
 
-* Import into your database or API
-* Analyze data for research
-* Provide accurate cannabis data
-* Even profit!
+* Import into your database or API  
+* Analyze data for research  
+* Provide accurate cannabis data  
+* Even profit!  
 
 ## Documentation
 
 The datasets are located in the **Dataset** folder, inside of their own subfolder for the category (*e.g. **Dataset/Strains/***). We currently have the following categories available:
 
 * Strains
+
 * Products
+
 * Brands
+
 * Shops
 
 Keep watch for more categories (like lab results) and plenty more data.

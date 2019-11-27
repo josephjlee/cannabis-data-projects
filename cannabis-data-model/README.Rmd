@@ -63,4 +63,8 @@ The landing page for discovery is a great place to start. I have obtained a UK e
 fs::dir_tree(".")
 ```
 
+### Data visualizations 
+
+The data visualizations are built using the ggplot2 and plotly package. 
+
 
